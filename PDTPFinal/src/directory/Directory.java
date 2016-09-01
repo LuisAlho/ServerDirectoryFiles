@@ -46,7 +46,7 @@ public class Directory extends UnicastRemoteObject implements DirService {
 	}
 
 	public void init(){
-		System.out.println("Servi�o de directoria iniciado");
+		System.out.println("Servico de directoria iniciado");
 		//Iniciar lista de users
 
 		auth.createList("C:\\Users\\Alho\\Documents\\GitHub\\ServerDirectoryFiles\\Server\\bin\\server\\users\\user.txt");
