@@ -1,5 +1,7 @@
 package directory;
 
+import java.io.ByteArrayInputStream;
+
 /*
  * Esquecer servidor ao fim de 3 HB
  * Actualizar interface remota de modo a enviar o ip dos servidores registados 
@@ -15,6 +17,7 @@ package directory;
  * */
 
 import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.net.MulticastSocket;
@@ -27,6 +30,7 @@ import java.util.ArrayList;
 import java.util.Date;
 
 import utils.DadosServidor;
+import utils.HeartBeat;
 import utils.User;
 
 public class Directory extends UnicastRemoteObject implements DirService {
@@ -59,8 +63,7 @@ public class Directory extends UnicastRemoteObject implements DirService {
 		try {
 			
 			group = InetAddress.getByName("225.15.15.15");
-			socket = new MulticastSocket(PORT);
-			
+			socket = new MulticastSocket(PORT);			
 			socket.joinGroup(group);
 			//socket.setTimeToLive(1); //TTL	
 			
@@ -73,9 +76,42 @@ public class Directory extends UnicastRemoteObject implements DirService {
 		}
 		
 		byte[] response = new byte[1024];
-		DatagramPacket packet = new DatagramPacket(response, response.length);
+		//DatagramPacket packet = new DatagramPacket(response, response.length);
 		while(true){
+			
+			DatagramPacket incomingPacket = new DatagramPacket(response, response.length);
 			try {
+				socket.receive(incomingPacket);
+				byte[] data = incomingPacket.getData();
+				ByteArrayInputStream in = new ByteArrayInputStream(data);
+				ObjectInputStream is = new ObjectInputStream(in);
+				
+				HeartBeat hb = (HeartBeat) is.readObject();
+				System.out.println("HeartBeat object received = " + hb.toString());
+				System.out.println("From: " + incomingPacket.getAddress().toString() + " : " + incomingPacket.getPort());
+				
+				byte[] send = new byte[256];
+				
+				send = "HeartBeat Recebido com sucesso".getBytes();
+	
+
+				incomingPacket.setData(send, 0, send.length);
+				socket.send(incomingPacket);
+			
+			
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (ClassNotFoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
+			
+			
+			
+			/*try {
+				
 				System.out.println("Multicast waiting");
 			
 				socket.receive(packet);
@@ -90,7 +126,7 @@ public class Directory extends UnicastRemoteObject implements DirService {
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
-			}
+			}*/
 		}
 	}
 

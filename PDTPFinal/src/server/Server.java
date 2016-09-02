@@ -7,14 +7,27 @@ import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.SocketException;
 import java.net.UnknownHostException;
+import utils.HeartBeat;
+
 
 public class Server {
 	
 	private final int MULTICAST_PORT = 700;
-	private final int UDP_PORT = 2000;
+	//private final int UDP_PORT = 2000;
+	protected HeartBeat hb= null;
+	//protected UdpServerJava multicast = null; 
 	
 	public void init(){
 		
+		try {
+			Thread multicast = new Thread(new UdpServer(new HeartBeat("Servidor1", true),MULTICAST_PORT));
+			multicast.start();
+		} catch (SocketException | UnknownHostException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		/*
 		try {
 			InetAddress addr = InetAddress.getByName("225.15.15.15");
 			//byte[] data = new byte[1024];
@@ -56,6 +69,7 @@ public class Server {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		*/
 		
 	}
 
