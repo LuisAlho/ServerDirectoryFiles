@@ -9,6 +9,16 @@ import java.net.SocketException;
 import java.net.UnknownHostException;
 import utils.HeartBeat;
 
+/*
+ * long t= System.currentTimeMillis();
+long end = t+15000;
+while(System.currentTimeMillis() < end) {
+  // do something
+  // pause to avoid churning
+  
+}
+ * 
+ * */
 
 public class Server {
 	

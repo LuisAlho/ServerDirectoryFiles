@@ -53,7 +53,7 @@ public class Directory extends UnicastRemoteObject implements DirService {
 		System.out.println("Servico de directoria iniciado");
 		//Iniciar lista de users
 
-		auth.createList("C:\\Users\\Alho\\Documents\\GitHub\\ServerDirectoryFiles\\Server\\bin\\server\\users\\user.txt");
+		auth.createList("C:\\Users\\Alho\\Documents\\GitHub\\ServerDirectoryFiles\\PDTPFinal\\bin\\directory\\users\\user.txt");
 		auth.listarLista();
 		initRegistry();
 		//Thread multicast = new Thread(new DirMulticast(700), "MulticastDir");
@@ -135,9 +135,7 @@ public class Directory extends UnicastRemoteObject implements DirService {
 		srvList.add(new DadosServidor("Servidor 1","ip", new Date(), 25));
 		
 	}
-	
-	 
-	
+
 	public void initMulticast(){
 		
 		try {
@@ -210,7 +208,6 @@ public class Directory extends UnicastRemoteObject implements DirService {
 		return "O ip do servidor e: localhost";
 	}
 	
-	
 	/*************/
 	/*MAIN METODO*/
 	/*************/
@@ -220,5 +217,4 @@ public class Directory extends UnicastRemoteObject implements DirService {
 		Directory dir = new Directory();
 		dir.init();
 	}
-
 }
