@@ -136,6 +136,7 @@ public class Directory extends UnicastRemoteObject implements DirService {
 		
 	}
 
+	/*INICIA MULTICAST */
 	public void initMulticast(){
 		
 		try {
@@ -156,6 +157,8 @@ public class Directory extends UnicastRemoteObject implements DirService {
 		
 	}
 	
+	
+	/* INICIA REGISTO DO SERVICO REMOTO */
 	public void initRegistry(){
 		try{
 
@@ -181,7 +184,7 @@ public class Directory extends UnicastRemoteObject implements DirService {
 
             // Regista o servico para que os clientes possam encontra'-lo, ou seja,
             // obter a sua referencia remota (endereco IP, porto de escuta, etc.).
-
+            
             r.rebind("DirService", this);
 
             System.out.println("Servico de Directoria registado no registry...");
