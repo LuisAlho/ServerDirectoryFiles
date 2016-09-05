@@ -53,7 +53,9 @@ public class Client implements RemoteClient {
 		user.setPassword(sc.nextLine());
 		
 		//user = new User("luis", "1231");
-		//String localizacao = "//localhost/DirService";
+		
+		
+		sc.close();
 
 		try{
             String objectUrl = "rmi://"+ ipDirService +"/DirService"; //rmiregistry on localhost
