@@ -23,6 +23,8 @@ import utils.User;
 
 public class Directory extends UnicastRemoteObject implements DirService {
 
+	private static final String AUTH_FAIL = "FAIL_AUTH";
+	private static final String NO_SERVER = "NO_SERVER";
 	private static final long serialVersionUID = 1L;
 	private Authentication auth = new Authentication();
 	private int srvListIndex = 0;
@@ -204,7 +206,7 @@ public class Directory extends UnicastRemoteObject implements DirService {
 
 		/*VERIFICA USER*/
 		if(!auth.exist(s)){
-			return "FAIL_AUTH";
+			return AUTH_FAIL;
 		}
 		
 		/*ENVIA O IP DO SERVIDOR SEGUINDO O METODO ROUND-ROBIN*/
@@ -223,7 +225,7 @@ public class Directory extends UnicastRemoteObject implements DirService {
 					return msg;
 				}
 			}
-			return "NO_SERVER";
+			return NO_SERVER;
 		}
 	}
 	

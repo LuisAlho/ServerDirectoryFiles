@@ -27,7 +27,7 @@ public class Server {
 		
 		try {
 			Thread multicast = new Thread(new UdpServer(new HeartBeat("Servidor1", true),MULTICAST_PORT));
-			multicast.setDaemon(true);
+			multicast.setDaemon(false);
 			multicast.start();
 			
 			
