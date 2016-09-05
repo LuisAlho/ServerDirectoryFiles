@@ -80,6 +80,9 @@ public class Client implements RemoteClient {
 	            }
             }
             
+            /* REGISTAR A INTERFACE REMOTA DO CLIENTE*/
+            
+            
             /* ADQUIRIR INTERFACE REMOTA DO SERVIDOR */
             
             /*
