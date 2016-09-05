@@ -28,6 +28,7 @@ import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Iterator;
 
 import utils.DadosServidor;
 import utils.HeartBeat;
@@ -37,7 +38,10 @@ public class Directory extends UnicastRemoteObject implements DirService {
 
 	private static final long serialVersionUID = 1L;
 	private Authentication auth = new Authentication();
-	private ArrayList<DadosServidor> srvList = null; // new ArrayList<String>();
+	private int srvListIndex = 0;
+	
+	/*  LISTA DOS SERVIDORES REGISTADOS*/
+	protected ArrayList<DadosServidor> srvList = new ArrayList<>(); 
 	
 	//MULTICAST UDP VARIABLES
 	private final int PORT = 700;
@@ -51,15 +55,28 @@ public class Directory extends UnicastRemoteObject implements DirService {
 
 	public void init(){
 		System.out.println("Servico de directoria iniciado");
-		//Iniciar lista de users
-
-		auth.createList("C:\\Users\\Alho\\Documents\\GitHub\\ServerDirectoryFiles\\PDTPFinal\\bin\\directory\\users\\user.txt");
-		auth.listarLista();
-		initRegistry();
-		//Thread multicast = new Thread(new DirMulticast(700), "MulticastDir");
-		//multicast.start();
-		//initMulticast();
 		
+		/* INCIAR LSITA DE UTILIZADORES REGISTADOS */
+		auth.createList("C:\\Users\\Alho\\Documents\\GitHub\\ServerDirectoryFiles\\PDTPFinal\\bin\\directory\\users\\user.txt");
+		//auth.createList("user.txt");
+		auth.listarLista();
+		
+		
+		/*INICIAR O REGISTO DA INTERFACE REMOTA*/
+		initRegistry();
+		
+		/*INCIA THREAD DE VERIFICACAO DE INACTIVIDADE DOS SERVIDORES*/
+		
+		Thread verifyServer = new Thread(new VerifyServer());
+		verifyServer.setDaemon(true); //Set DAEMON true para  terminar thread quando a main tb terminar
+		verifyServer.start();
+		
+		/* INICIAR SERVICO DE ESCUTA EM MULTICAST
+		 * 
+		 * IP: 225.15.15.15
+		 * PORTA: 700
+		 * 
+		 * */
 		try {
 			
 			group = InetAddress.getByName("225.15.15.15");
@@ -81,24 +98,10 @@ public class Directory extends UnicastRemoteObject implements DirService {
 			
 			DatagramPacket incomingPacket = new DatagramPacket(response, response.length);
 			try {
-				socket.receive(incomingPacket);
-				byte[] data = incomingPacket.getData();
-				ByteArrayInputStream in = new ByteArrayInputStream(data);
-				ObjectInputStream is = new ObjectInputStream(in);
-				
-				HeartBeat hb = (HeartBeat) is.readObject();
-				System.out.println("HeartBeat object received = " + hb.toString());
-				System.out.println("From: " + incomingPacket.getAddress().toString() + " : " + incomingPacket.getPort());
-				
-				byte[] send = new byte[256];
-				
-				send = "HeartBeat Recebido com sucesso".getBytes();
-	
+				socket.receive(incomingPacket);	
+				// ADICIONAR / ACTUALIZAR SERVIDOR RECEBIDO		
+				tratarHeartBeatRecebido(incomingPacket);
 
-				incomingPacket.setData(send, 0, send.length);
-				socket.send(incomingPacket);
-			
-			
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -106,34 +109,40 @@ public class Directory extends UnicastRemoteObject implements DirService {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			
-			
-			
-			
-			/*try {
-				
-				System.out.println("Multicast waiting");
-			
-				socket.receive(packet);
-				
-				String msg = new String(packet.getData(),0,packet.getLength());
-				System.out.println(msg);
-				
-				tratarPacketMulticast(packet);
-				
-				socket.send(packet);
-				
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}*/
 		}
 	}
 
-	private void tratarPacketMulticast(DatagramPacket packet){
+	private void tratarHeartBeatRecebido(DatagramPacket packet) throws IOException, ClassNotFoundException{
 		
-		srvList.add(new DadosServidor("Servidor 1","ip", new Date(), 25));
 		
+		byte[] data = packet.getData();
+		ByteArrayInputStream in = new ByteArrayInputStream(data);
+		ObjectInputStream is = new ObjectInputStream(in);
+		
+		HeartBeat hb = (HeartBeat) is.readObject();
+		System.out.println("HeartBeat object received = " + hb.toString());
+		System.out.println("From: " + packet.getAddress().toString() + " : " + packet.getPort());
+		
+		synchronized(srvList){
+			if(!srvList.isEmpty()){
+				int flag = 0;
+				Iterator<DadosServidor> it = srvList.iterator();
+				while(it.hasNext()){
+					
+					DadosServidor s = it.next();
+					if(hb.getNome().equals(s.getNome())){
+						s.setDate(new Date());
+						flag = 1;
+					}
+				}
+				if (flag == 0)
+					srvList.add(new DadosServidor(hb.getNome(),packet.getAddress().toString(), new Date(), packet.getPort()));
+					
+			}else{
+				
+				srvList.add(new DadosServidor(hb.getNome(),packet.getAddress().toString(), new Date(), packet.getPort()));	
+			}
+		}
 	}
 
 	/*INICIA MULTICAST */
@@ -166,7 +175,7 @@ public class Directory extends UnicastRemoteObject implements DirService {
 
             try{
 
-                System.out.println("Tentativa de lancamento do registry no porto " + Registry.REGISTRY_PORT + "...");
+                System.out.println("\nTentativa de lancamento do registry no porto " + Registry.REGISTRY_PORT + "...");
 
                 r = LocateRegistry.createRegistry(Registry.REGISTRY_PORT);
 
@@ -180,14 +189,14 @@ public class Directory extends UnicastRemoteObject implements DirService {
             // Cria e lanca o servico,
 
 
-            System.out.println("Servico RemoteTime criado e em execucao ("+this.getRef().remoteToString()+"...");
+            System.out.println("Servico remoto criado e em execucao (" + this.getRef().remoteToString()+"...");
 
             // Regista o servico para que os clientes possam encontra'-lo, ou seja,
             // obter a sua referencia remota (endereco IP, porto de escuta, etc.).
             
             r.rebind("DirService", this);
 
-            System.out.println("Servico de Directoria registado no registry...");
+            System.out.println("Servico de Directoria registado no registry...\n");
 
         }catch(RemoteException e){
             System.out.println("Erro remoto - " + e.getMessage());
@@ -204,11 +213,31 @@ public class Directory extends UnicastRemoteObject implements DirService {
 	/******************/
 	@Override
 	public String getIpServer(User s) throws RemoteException {
+		String msg;
 
+		/*VERIFICA USER*/
 		if(!auth.exist(s)){
-			return "Fail";
+			return "FAIL_AUTH";
 		}
-		return "O ip do servidor e: localhost";
+		
+		/*ENVIA O IP DO SERVIDOR SEGUINDO O METODO ROUND-ROBIN*/
+		synchronized(srvList){
+			if (!srvList.isEmpty()){
+				if(srvListIndex > srvList.size()){
+					
+					msg = srvList.get(srvListIndex).getIp();
+					srvListIndex++;
+					
+					return msg;
+					
+				}else{
+					srvListIndex = 0;
+					msg = srvList.get(srvListIndex).getIp(); 		
+					return msg;
+				}
+			}
+			return "NO_SERVER";
+		}
 	}
 	
 	/*************/
@@ -220,4 +249,54 @@ public class Directory extends UnicastRemoteObject implements DirService {
 		Directory dir = new Directory();
 		dir.init();
 	}
+	
+	
+	/*
+	 * IMPLEMENTA VERIFICACAO DE INACTIVIDADE DOS SERVIDORES
+	 *  
+	 * */
+	
+	class VerifyServer implements Runnable{
+
+		@Override
+		public  void run() {
+			
+			// VERIFICA SE NAO RECEBE HA MAIS DE 15 SEGUNDOS
+			try {
+				System.out.println("\nIniciada verificacao periodica dos servidores");
+				while(true){
+
+					synchronized(srvList){
+						if( !srvList.isEmpty()){
+							
+							Iterator<DadosServidor> it = srvList.iterator();
+							while (it.hasNext()) {
+								
+								DadosServidor s = it.next();
+								//SE TEMPO FOR SUPERIOR A 15 SEGUNDOS ELIMINA REGISTO
+								if(secondsBetween( new Date(), s.getDate()) > 15){
+									System.out.println("Servidor \"" + s.getNome() + "\" removido da lista por inactividade");
+									it.remove();
+								}
+							}
+						}
+					}
+					//  ESPERA 5 SEGUNDOS ATE PROXIMA VERIFICACAO
+					Thread.sleep(5000);
+				}				
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		
+		private int secondsBetween(Date first, Date second){
+			
+			int seconds = (int) (first.getTime() - second.getTime()) / 1000;
+			System.out.println("\nSegundos: " + seconds);
+			return seconds;
+		}
+	}
+	
+	
 }

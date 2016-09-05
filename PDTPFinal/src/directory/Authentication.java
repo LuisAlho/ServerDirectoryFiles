@@ -13,15 +13,11 @@ public class Authentication {
 	
 	protected ArrayList<User> userList;
 	
-	//Create Array List com lista de utilizadores
-	//metodo para ler o ficheiro dos utilizadores e guardar
+	/*LE FICHEIRO COM OS UTILIZADORES E CRIA UM ARRAY COM OS MESMOS*/
 	
 	public void createList(String fileName){
 		
-		// The name of the file to open.
-        //String fName = "users.txt";
-
-        // This will reference one line at a time
+		
         String name = null;
         String pass = null;
         userList = new ArrayList<User>();
@@ -48,8 +44,7 @@ public class Authentication {
         catch(IOException ex) {
             System.out.println("Error reading file '" + fileName + "'");
             System.exit(1);
-            // Or we could just do this: 
-            // ex.printStackTrace();
+           
         }catch(Exception ex){
         	System.out.println("Erro - "+ ex.getMessage());
         	System.exit(1);
@@ -57,18 +52,19 @@ public class Authentication {
 		
 	}
 	
+	/* MOSTRA NO ECRA OS UTILIZADORES REGISTADOS */
 	public void listarLista(){
 		
-		System.out.println("Utilizadores Registados");
+		System.out.println("\nUtilizadores Registados");
 		System.out.println("Total: " + userList.size());
 		
 		for(User s : userList){	
-			System.out.println("Nome: "+s.getName());
+			System.out.println("\nNome: "+s.getName());
 			System.out.println("Pass: "+s.getPassword());
 		}
 	}
 	
-	//Verificar se o user se encontra na lista de users
+	/* VERIFICA SE UM UTILIZADOR ESTA NA LISTA */
 	public boolean exist(User client){
 		
 		for(User su : userList){

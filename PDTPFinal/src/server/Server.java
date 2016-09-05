@@ -1,10 +1,6 @@
 package server;
 
-import java.io.IOException;
-import java.io.InterruptedIOException;
-import java.net.DatagramPacket;
-import java.net.DatagramSocket;
-import java.net.InetAddress;
+
 import java.net.SocketException;
 import java.net.UnknownHostException;
 import utils.HeartBeat;
@@ -31,7 +27,10 @@ public class Server {
 		
 		try {
 			Thread multicast = new Thread(new UdpServer(new HeartBeat("Servidor1", true),MULTICAST_PORT));
+			multicast.setDaemon(true);
 			multicast.start();
+			
+			
 		} catch (SocketException | UnknownHostException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

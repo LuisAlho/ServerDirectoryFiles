@@ -52,14 +52,7 @@ public class UdpServer implements Runnable {
 		packet = new DatagramPacket(buf, buf.length, addrUdpMulticast, portUdp);
 		
 		socket.send(packet);
-		
-		byte[] receive = new byte[256];
-		packet.setData(receive,0,receive.length);
-		socket.receive(packet);
-		
-		String msg = new String(packet.getData(), 0, packet.getLength());
-		System.out.println(msg);
-		
+				
 		socket.close();
 	}
 }
