@@ -2,19 +2,6 @@ package directory;
 
 import java.io.ByteArrayInputStream;
 
-/*
- * Esquecer servidor ao fim de 3 HB
- * Actualizar interface remota de modo a enviar o ip dos servidores registados 
- *  - (Metodo Round-Robin)
- *  
- *  How to know the time in seconds between this two dates
- *  private long secondsBetween(Date first, Date sedond){
- *  	return 
- *  }
- *  int seconds = (date1.getTime() - date2.getTime()) / 1000;
- *  
- *  Implementar class HearBeat e DadosServidor 
- * */
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
