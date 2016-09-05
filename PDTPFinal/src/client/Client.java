@@ -5,6 +5,7 @@ import java.io.File;
 import java.rmi.Naming;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
+import java.util.Scanner;
 
 import directory.DirService;
 import utils.User;
@@ -18,7 +19,7 @@ public class Client implements RemoteClient {
 	private DirService dirSrv = null;
 	private String ipServer;
 	private File directory =  null;
-	private String ipDirService;
+	private String ipDirService = null;
 	
 	public Client(String ip, String nameDir){
 		ipDirService = ip;
@@ -28,25 +29,34 @@ public class Client implements RemoteClient {
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
 		
-		if ( args.length != 3 )
+		if ( args.length != 2 )
 		{
+			System.out.println("Dir: " +args[1] + "\nIP: " +args[0] );	
 			System.out.println("Syntaxe: java Client \"Directoria\" \"IP\"");
 			System.exit(1);
 		}
+		
+		System.out.println("Dir: " +args[0] + "\nIP: " +args[1] );
 
-		Client cli = new Client(args[2], args[1]);
+		Client cli = new Client(args[1], args[0]);
 		cli.init();
 	}
 
 	public void init(){
 		
+		user = new User();
 		
+		Scanner sc = new Scanner(System.in);
+		System.out.println("Nome: ");
+		user.setName(sc.nextLine());
+		System.out.println("Password: ");
+		user.setPassword(sc.nextLine());
 		
-		user = new User("luis", "1231");
+		//user = new User("luis", "1231");
 		//String localizacao = "//localhost/DirService";
 
 		try{
-            String objectUrl = "rmi://127.0.0.1/DirService"; //rmiregistry on localhost
+            String objectUrl = "rmi://"+ ipDirService +"/DirService"; //rmiregistry on localhost
 
          //   if(args.length > 0){
            //     objectUrl = "rmi://"+args[0]+"/RemoteTime";

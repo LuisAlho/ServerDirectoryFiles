@@ -7,6 +7,8 @@ public class User implements Serializable {
 	
 	private String name;
 	private String password;
+	
+	public User(){}
 			
 	public User(String name, String password) {
 		super();
