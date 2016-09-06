@@ -42,6 +42,44 @@ public class Client implements RemoteClient {
 		cli.init();
 	}
 
+	public int menu(){
+		
+		int op;
+		System.out.println("MENU");
+		System.out.println("1 - Download");
+		System.out.println("2 - Upload");
+		System.out.println("3 - Delete");
+		System.out.println("4 - Visualizacao");
+		System.out.println("5 - Sair");
+		
+		Scanner sc = new Scanner(System.in);
+		do{
+			System.out.println("\n Opcao: ");
+			op = sc.nextInt();	
+			
+		}while(op > 5 || op < 1);
+			
+		sc.close();
+		return op;
+	}
+
+	public void trataOpcao(int op){
+		
+		switch (op){
+			
+			case 1: break;
+			case 2: break;
+			case 3: break;
+			case 4: break;
+			case 5: System.exit(1); 
+					break;
+			default: break;
+					
+		}
+	}
+
+	
+	
 	public void init(){
 		
 		user = new User();
@@ -93,7 +131,8 @@ public class Client implements RemoteClient {
              * */
             
             /*INICAR MENU COM OPCOES A EFECTUAR PELO CIENTE*/
-            
+            int op = menu();
+            trataOpcao(op);
             /*
              * MENU
              * - DOWNLOAD
