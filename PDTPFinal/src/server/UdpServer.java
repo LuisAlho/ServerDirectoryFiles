@@ -34,13 +34,19 @@ public class UdpServer implements Runnable {
 		try {
 			init();
 		} catch (IOException e) {
-			System.out.println("Err - " + e.getMessage());
-			System.exit(1);			
+			System.out.println("Erro ao serializar HB object - " + e.getMessage());
+			System.exit(1);
+		} catch (InterruptedException e) {
+			System.out.println("Thread Multicast HB interrompida - " + e.getMessage());
+			socket.close();
+		}finally{
+			socket.close();
+			System.exit(1);
 		}
 		
 	}
 	
-	protected void init() throws IOException{
+	protected void init() throws IOException, InterruptedException{
 		
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
 	    ObjectOutputStream oos = new ObjectOutputStream(baos);
@@ -51,8 +57,13 @@ public class UdpServer implements Runnable {
 	    
 		packet = new DatagramPacket(buf, buf.length, addrUdpMulticast, portUdp);
 		
-		socket.send(packet);
-				
-		socket.close();
+		//ENVIA HEART BEATS A CADA 5 SEGUNDOS
+		while(true){
+			
+			System.out.println("A enviar HeartBeat...");
+			socket.send(packet);
+			Thread.sleep(5000);
+		}
+		
 	}
 }

@@ -166,15 +166,26 @@ public class Client implements RemoteClient {
 //			e.printStackTrace();
 //		}
 	}
-
+	
 	
 	/******************/
 	/*INTERFACE REMOTA*/
 	/******************/
+	
 	@Override
-	public void notifyClient() throws RemoteException {
+	public void notifyFileList(String description) throws RemoteException {
 		// TODO Auto-generated method stub
 		
 	}
+
+	@Override
+	public boolean writeFileChunk(byte[] fileChunk, int nbytes) throws RemoteException {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	
+	
+	
 
 }
