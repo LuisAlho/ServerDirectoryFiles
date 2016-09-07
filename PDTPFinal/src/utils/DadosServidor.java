@@ -1,20 +1,25 @@
 package utils;
 
+
 import java.util.Date;
+
+import server.RemoteServidor;
 
 public class DadosServidor {
 
 	private String nome;
 	private String ip;
 	private Date date;
+	private RemoteServidor serverInterface = null;
 	private int portoUDP;
 	
 	
-	public DadosServidor(String nome, String ip, Date date, int portoUDP) {
+	public DadosServidor(String nome, String ip, Date date, int portoUDP, RemoteServidor serverInterface) {
 		this.nome = nome;
 		this.ip = ip;
 		this.date = date;
 		this.portoUDP = portoUDP;
+		this.serverInterface = serverInterface;
 	}
 	public String getNome() {
 		return nome;
@@ -39,5 +44,11 @@ public class DadosServidor {
 	}
 	public void setPortoUDP(int portoUDP) {
 		this.portoUDP = portoUDP;
+	}
+	public RemoteServidor getServerInterface() {
+		return serverInterface;
+	}
+	public void setServerInterface(RemoteServidor serverInterface) {
+		this.serverInterface = serverInterface;
 	}
 }

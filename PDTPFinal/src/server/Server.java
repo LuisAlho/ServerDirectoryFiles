@@ -30,7 +30,7 @@ while(System.currentTimeMillis() < end) {
  * 
  * */
 
-public class Server extends UnicastRemoteObject implements RemoteServer {
+public class Server extends UnicastRemoteObject implements RemoteServidor {
 	
 	
 	private static final long serialVersionUID = 1L;
@@ -40,13 +40,13 @@ public class Server extends UnicastRemoteObject implements RemoteServer {
 	
 	private final int MULTICAST_PORT = 700;
 	//private final int UDP_PORT = 2000;
-	protected HeartBeat hb= null;
+	protected HeartBeat hb = null;
 	//protected UdpServerJava multicast = null; 
-	
+	private boolean primario = true;
+	private boolean suspende = false;
+	private boolean primeiraRound = true;
 	protected File localDirectory;
-	
-	
-	
+
 	List<RemoteClient> observers;
 	
 	public Server(File localDirectory) throws RemoteException{
@@ -57,8 +57,23 @@ public class Server extends UnicastRemoteObject implements RemoteServer {
 	
 	public void init(){
 		
+		
+		
+		/* NA PRIMEIRA VEZ QUE FOR INICIADO
+		 * 
+		 * Verificacao de 15 segundos
+		 * 
+		 * ASSUME PRIMARIO/SECUNDARIO
+		 *  - SE NAO FOR PRIMARIO
+		 *    OBTEM REFERENCIA REMOTA DO PRIMARIO.
+		 *  - INICIA ENVIO DE HB A CADA 5 SEGUNDOS
+		 * 
+		 * */
+		
+		
+		
 		try {
-			Thread multicast = new Thread(new UdpServer(new HeartBeat("Servidor2", true),MULTICAST_PORT));
+			Thread multicast = new Thread(new UdpServer(new HeartBeat("Servidor2", primario, this ),MULTICAST_PORT));
 			multicast.setDaemon(true);
 			multicast.start();
 			
@@ -169,8 +184,6 @@ public class Server extends UnicastRemoteObject implements RemoteServer {
 		}
 	}
 
-	
-	
 	public synchronized void notifyObservers(String msg)
     {
         int i;
@@ -184,7 +197,6 @@ public class Server extends UnicastRemoteObject implements RemoteServer {
             }
         }
     }
-	
 	
 	@Override
 	public synchronized boolean getFile(String fileName, RemoteClient cli) throws RemoteException {
@@ -292,9 +304,14 @@ public class Server extends UnicastRemoteObject implements RemoteServer {
         }
 	}
 
+	public String getFileList() throws RemoteException{
+		
+		return "Ficheiros Disponiveis: ";
+	} 
+	
 	@Override
 	public void removeObserver(RemoteClient observer) throws RemoteException {
-		// TODO Auto-generated method stub
+		
 		
 		if(observers.remove(observer))
             System.out.println("- um observador.");

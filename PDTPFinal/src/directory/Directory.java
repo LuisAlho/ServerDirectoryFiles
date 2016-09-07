@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
 
+import server.RemoteServidor;
 import utils.DadosServidor;
 import utils.HeartBeat;
 import utils.User;
@@ -125,11 +126,11 @@ public class Directory extends UnicastRemoteObject implements DirService {
 					}
 				}
 				if (flag == 0)
-					srvList.add(new DadosServidor(hb.getNome(),packet.getAddress().toString(), new Date(), packet.getPort()));
+					srvList.add(new DadosServidor(hb.getNome(),packet.getAddress().toString(), new Date(), packet.getPort(), hb.getServerInterface()));
 					
 			}else{
 				
-				srvList.add(new DadosServidor(hb.getNome(),packet.getAddress().toString(), new Date(), packet.getPort()));	
+				srvList.add(new DadosServidor(hb.getNome(),packet.getAddress().toString(), new Date(), packet.getPort(), hb.getServerInterface()));	
 			}
 		}
 	}
@@ -200,33 +201,43 @@ public class Directory extends UnicastRemoteObject implements DirService {
 	/******************/
 	/*INTERFACE REMOTA*/
 	/******************/
+	
 	@Override
-	public String getIpServer(User s) throws RemoteException {
-		String msg;
-
-		/*VERIFICA USER*/
-		if(!auth.exist(s)){
-			return AUTH_FAIL;
-		}
+	public synchronized String doAuthentication(User s) throws RemoteException {
 		
-		/*ENVIA O IP DO SERVIDOR SEGUINDO O METODO ROUND-ROBIN*/
+		if(!auth.exist(s))
+			return AUTH_FAIL;
+			
 		synchronized(srvList){
+			if (!srvList.isEmpty())
+				return NO_SERVER;
+		}
+		return "OK";
+	}
+	
+	
+	@Override
+	public synchronized RemoteServidor getRemoteServerInterface() throws RemoteException {
+		RemoteServidor msg;
+
+		/*ENVIA A INTERFACE REMOTA DO SERVIDOR SEGUINDO O METODO ROUND-ROBIN*/
+		
 			if (!srvList.isEmpty()){
 				if(srvListIndex > srvList.size()){
 					
-					msg = srvList.get(srvListIndex).getIp();
+					msg = srvList.get(srvListIndex).getServerInterface();
 					srvListIndex++;
 					
 					return msg;
 					
 				}else{
 					srvListIndex = 0;
-					msg = srvList.get(srvListIndex).getIp(); 		
+					msg = srvList.get(srvListIndex).getServerInterface(); 		
 					return msg;
 				}
 			}
-			return NO_SERVER;
-		}
+			return null;
+		
 	}
 	
 	/*************/
@@ -286,6 +297,9 @@ public class Directory extends UnicastRemoteObject implements DirService {
 			return seconds;
 		}
 	}
+
+
+	
 	
 	
 }
