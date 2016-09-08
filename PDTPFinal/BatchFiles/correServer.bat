@@ -1,3 +1,3 @@
-java -cp ..\bin server.Server
+java -cp ..\bin Servidor temp server1
 pause 
 

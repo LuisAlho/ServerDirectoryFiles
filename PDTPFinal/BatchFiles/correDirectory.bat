@@ -1,3 +1,3 @@
-java -cp ..\bin server.Directory
+java -cp ..\bin Directory
 pause 
 
