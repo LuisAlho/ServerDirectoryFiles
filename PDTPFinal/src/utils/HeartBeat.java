@@ -8,19 +8,19 @@ import server.RemoteServidor;
 
 public class HeartBeat implements Serializable {
 	
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 5399492312395349562L;
+
+	private static final long serialVersionUID = 1L;
 	private String nome;
-	private RemoteServidor serverInterface = null;
+	private RemoteServidor serverInterface;
+	//private Teste teste;
 	private boolean primario;
 	
 	
-	public HeartBeat(String nome, boolean primario, RemoteServidor rtServidor) {
+	public HeartBeat(String nome, boolean primario, RemoteServidor rt) {
 		this.nome = nome;
 		this.primario = primario;
-		this.serverInterface = rtServidor;
+		//this.teste = rt;
+		this.serverInterface = rt;
 	}
 	
 	public String getNome() {
@@ -52,6 +52,13 @@ public class HeartBeat implements Serializable {
 	public void setServerInterface(RemoteServidor serverInterface) {
 		this.serverInterface = serverInterface;
 	}
-	
-	
+
+/*
+	public Teste getTeste() {
+		return teste;
+	}
+
+	public void setTeste(Teste teste) {
+		this.teste = teste;
+	}*/
 }

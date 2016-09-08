@@ -13,6 +13,10 @@ import utils.HeartBeat;
 
 public class UdpServer implements Runnable {
 
+	/**
+	 * 
+	 */
+	
 	protected HeartBeat hb = null;
 	protected InetAddress addrUdpMulticast = null;
 	protected DatagramPacket packet = null;
@@ -32,9 +36,11 @@ public class UdpServer implements Runnable {
 	public void run() {
 		// TODO Auto-generated method stub
 		try {
+			
 			init();
 		} catch (IOException e) {
 			System.out.println("Erro ao serializar HB object - " + e.getMessage());
+			e.printStackTrace();
 			System.exit(1);
 		} catch (InterruptedException e) {
 			System.out.println("Thread Multicast HB interrompida - " + e.getMessage());
@@ -46,13 +52,14 @@ public class UdpServer implements Runnable {
 		
 	}
 	
-	protected void init() throws IOException, InterruptedException{
-		
+	protected synchronized void init() throws IOException, InterruptedException{
+	
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
 	    ObjectOutputStream oos = new ObjectOutputStream(baos);
 	    oos.writeObject(hb);
 	    oos.flush();
-		
+	    
+	    
 	    byte[] buf = baos.toByteArray();
 	    
 		packet = new DatagramPacket(buf, buf.length, addrUdpMulticast, portUdp);

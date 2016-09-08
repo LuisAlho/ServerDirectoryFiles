@@ -1,14 +1,14 @@
 package directory;
 
 import java.io.ByteArrayInputStream;
-
-
+import java.io.File;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.net.MulticastSocket;
 import java.net.UnknownHostException;
+import java.nio.file.Paths;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
@@ -34,7 +34,7 @@ public class Directory extends UnicastRemoteObject implements DirService {
 	protected ArrayList<DadosServidor> srvList = new ArrayList<>(); 
 	
 	//MULTICAST UDP VARIABLES
-	private final int PORT = 700;
+	private final int PORT = 7000;
 	private InetAddress group = null;
 	private MulticastSocket socket = null;
 
@@ -47,7 +47,7 @@ public class Directory extends UnicastRemoteObject implements DirService {
 		System.out.println("Servico de directoria iniciado");
 		
 		/* INCIAR LSITA DE UTILIZADORES REGISTADOS */
-		auth.createList("C:\\Users\\Alho\\Documents\\GitHub\\ServerDirectoryFiles\\PDTPFinal\\bin\\directory\\users\\user.txt");
+		auth.createList(Paths.get(".").toAbsolutePath().normalize().toString() +File.separator + "user.txt");
 		//auth.createList("user.txt");
 		auth.listarLista();
 		
@@ -209,7 +209,7 @@ public class Directory extends UnicastRemoteObject implements DirService {
 			return AUTH_FAIL;
 			
 		synchronized(srvList){
-			if (!srvList.isEmpty())
+			if (srvList.isEmpty())
 				return NO_SERVER;
 		}
 		return "OK";
@@ -299,7 +299,5 @@ public class Directory extends UnicastRemoteObject implements DirService {
 	}
 
 
-	
-	
 	
 }
