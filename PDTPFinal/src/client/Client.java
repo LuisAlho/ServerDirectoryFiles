@@ -138,11 +138,11 @@ public class Client extends UnicastRemoteObject implements RemoteClient {
 				do{
 					System.out.println("Ficheiros:\n ");
 		            String str[] = remoteFileService.getFileList();
-					
-					for(String name:str){
-						System.out.println("\t -" + name);
+					if(str!= null){
+						for(String name:str){
+							System.out.println("\t -" + name);
+						}
 					}
-					
 					menu();
 					System.out.println("\n Opcao: ");
 					opcao =Integer.parseInt( sc.nextLine());
@@ -200,6 +200,7 @@ public class Client extends UnicastRemoteObject implements RemoteClient {
             System.out.println("Erro E/S - " + e);
         }catch(Exception e){
             System.out.println("Erro - " + e);
+            e.printStackTrace();
           }finally{
               if(localFileOutputStream != null){
                   /*

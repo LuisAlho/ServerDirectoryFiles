@@ -353,7 +353,7 @@ public class Servidor  extends UnicastRemoteObject implements RemoteServidor {
 	public synchronized String[] getFileList() throws RemoteException{
 		
 		
-			System.out.println("A enviar a lista de ficheiros para o cliente ");
+		System.out.println("A enviar a lista de ficheiros para o cliente ");
 		
 		String[] str = directory.list();
 		return str;
